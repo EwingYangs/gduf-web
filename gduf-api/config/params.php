@@ -2,6 +2,10 @@
 
 return [
     'adminEmail' => 'admin@example.com',
-    'gdufLoginUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/xk/LoginToXk',
-    'gdufScoreUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/kscj/cjcx_list',
+    'trem' => '2017-2018-1',//当前的学期
+    'gdufLoginUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/xk/LoginToXk',//教务系统登录地址
+    'gdufScoreUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/kscj/cjcx_list',//成绩查询地址
+    'gdufbooksearchUrl' => 'http://218.192.12.92/NTRdrBookRetr.aspx',//图书馆搜索地址
+    'gdufbookImageUrl' => 'http://218.192.12.92/NTRdrBookRetrAjaxImage.aspx',//图书馆搜索地址
+    'gdufclassroomUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/kbcx/kbxx_classroom_ifr'//自习室查询地址
 ];

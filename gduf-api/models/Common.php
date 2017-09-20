@@ -7,7 +7,7 @@ use Yii;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2017-08-30 11:53:32
+ * @Last Modified time: 2017-09-14 09:46:48
  */
 class Common
 {
@@ -57,32 +57,29 @@ class Common
 
 
     /**
-     * 封装curl,可GET和POST PUT DELETE
+     * 封装curl,可GET
      * @param string $url
      * @param array $data
      * @param string $method GET POST PUT DELETE
      * @param int $timeout 单位为秒
      */
-    public static function curlGetContents($url, $data = '', $method = "GET", $timeout = 5, $header = array())
+    public static function curlGetContents($url ,$timeout = 5, $header = array() , $html=0)
     {
-        if (is_array($data)) {
-            $data = http_build_query($data);
-        }
-
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);//定义是否显示状态头 1：显示 ； 0：不显示
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Bmob Web 1.0');
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, $html);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        // curl_setopt($ch, CURLOPT_USERAGENT, 'Bmob Web 1.0');
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 
         if ($header) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $header);  //设置头信息的地方
         }
 
-        if ("get" != strtolower($method) && $data) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        }
+
 
         $query = curl_exec($ch);
         curl_close($ch);
@@ -193,7 +190,7 @@ EOD;
      */
     public static function ajaxResult($code = 1000, $msg = '成功', $data = null, $return = false)
     {
-
+        header('Content-type: application/json');
         $r = array(
             'status' => array('code' => $code, 'msg' => $msg)
         );
@@ -236,6 +233,25 @@ EOD;
         return mb_substr($content, $contentOffset, $len, "utf8");
 
     }
+
+    //把一个数组分成几个数组  
+    //$arr 是数组  
+    //$num 是数组的个数  
+   public static function partition($arr,$num){  
+     //数组的个数  
+     $listcount=count($arr);  
+     //分成$num 个数组每个数组是多少个元素  
+     $parem=floor($listcount/$num);  
+     //分成$num 个数组还余多少个元素  
+     $paremm=$listcount%$num;  
+     $start=0;  
+     for($i=0;$i<$num;$i++){  
+        $end=$i<$paremm?$parem+1:$parem;  
+        $newarray[$i]=array_slice($arr,$start,$end);  
+        $start=$start+$end;  
+     }  
+     return $newarray;  
+   }  
 
 
 

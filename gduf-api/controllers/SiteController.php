@@ -76,11 +76,13 @@ class SiteController extends BaseController
             'xsfs' => $xsfs,
         );
 
-        $result = Common::curlPostAppMsg($gdufScoreUrl, $content, $header, 1800 ,0);
+        Common::curlPostAppMsg($gdufScoreUrl, $content, $header, 1800 ,0);
         $scoreInfo=ob_get_contents();//获取输出的内容
         $scoreInfo = preg_replace("/[\t\n\r]+/","",$scoreInfo);//去掉换行、制表等特殊字符
+        // $pattern = "/<div class=\"Nsb_pw\">([\S\s]*)<\/div>/";
+
         $scoreInfo = GdufFiter::fiterScore($scoreInfo); //过滤成绩
-        Common::ajaxResult(State::$SYS_PERMISSION_ERROR_CODE , State::$SYS_PERMISSION_ERROR_MSG ,$scoreInfo);
+        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$scoreInfo);
     }
 
     /**
