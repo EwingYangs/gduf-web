@@ -57,11 +57,11 @@ class SiteController extends BaseController
      * @return   [json]                   [description]
      */
     public function actionScore(){
-        ob_start(); //打开缓冲区
         $kksj = Yii::$app->request->post('kksj');//开课时间
         $kcxz = Yii::$app->request->post('kcxz');//课程性质
         $kcmc = Yii::$app->request->post('kcmc');//课程名称
         $xsfs = Yii::$app->request->post('xsfs');//显示方式
+
 
         $xsfs = $xsfs ? $xsfs : 'all';
 
@@ -76,9 +76,8 @@ class SiteController extends BaseController
             'xsfs' => $xsfs,
         );
 
-        Common::curlPostAppMsg($gdufScoreUrl, $content, $header, 1800 ,0);
-        $scoreInfo=ob_get_contents();//获取输出的内容
-        $scoreInfo = preg_replace("/[\t\n\r]+/","",$scoreInfo);//去掉换行、制表等特殊字符
+        $scoreInfo = Common::curlPostAppMsg($gdufScoreUrl, $content, $header, 1800 ,1);
+        $scoreInfo = preg_replace("/[\t\n\r]+/","",$scoreInfo['query']);//去掉换行、制表等特殊字符
         // $pattern = "/<div class=\"Nsb_pw\">([\S\s]*)<\/div>/";
 
         $scoreInfo = GdufFiter::fiterScore($scoreInfo); //过滤成绩

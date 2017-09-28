@@ -8,7 +8,7 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2017-09-20 15:04:23
+ * @Last Modified time: 2017-09-27 17:02:41
  */
 class GdufFiter
 {
@@ -41,12 +41,12 @@ class GdufFiter
 
         $td_pattern = "/<tr><td>([^<>]+)<\/td><td>([^<>]+)<\/td><td align=\"left\">([^<>]+)<\/td><td align=\"left\">([^<>]+)<\/td><!-- 控制成绩显示 --><td style=\" \"><a href=\"([^<>]+)\">([^<>]+)<\/a><\/td><\/td><td>([^<>]+)<\/td><td>0<\/td><!-- 控制绩点显示 -->           <td>([^<>]*)<\/td>      <td>([^<>]+)<\/td><td>([^<>]+)<\/td><td>([^<>]+)<\/td><\/tr>/";
         preg_match_all($td_pattern, $scoreInfo, $td_results);
-
         $td_res = self::unsetFirstEles($td_results);
         $td_arr = self::divArray($td_res);
-        $th_res = self::getScoreth($scoreInfo);
 
-        $result = [$title_res , $th_res , $td_arr];
+
+        $td_arr = Common::Pagination($td_arr);//分页
+        $result = ['all' => $title_res , 'data' => $td_arr];
         return $result;
     }
 
@@ -181,6 +181,53 @@ class GdufFiter
 
 
         Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$roomResult);
+
+    }
+
+    public static function  fiterLesson($lessonInfo){
+        $lessonInfo = preg_replace("/(<br>)+/","",$lessonInfo);//去掉换行、制表等特殊字符
+
+        // $lessonInfo = preg_replace("/( <div id='' class=\"kbcontent1\">([^<>]*)<\/div>)+/",1,$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(<\/div><div id='' class=\"kbcontent1\">)+/",'',$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/( &nbsp;)+/"," <div id='' class=\"kbcontent1\">0</div>",$lessonInfo);//去掉换行、制表等特殊字符
+        $f_pattern = "/<td height=\"28\" align=\"center\"><nobr>([^<>]*)<\/nobr><\/td>/";
+        preg_match_all($f_pattern, $lessonInfo, $floorResult);
+
+
+
+
+        $f_pattern = "/<td height=\"28\" align=\"center\"><nobr>([^<>]*)<\/nobr><\/td>/";
+        preg_match_all($f_pattern, $lessonInfo, $floorResult);
+
+        $r_pattern = "/<td  height=\"28\" align=\"center\" valign=\"top\"><nobr> <div id='' class=\"kbcontent1\">([^<>]*)<\/div><\/nobr><\/td>/";
+
+
+        preg_match_all($r_pattern, $lessonInfo, $roomResult);
+
+
+
+
+        $roomResult = $roomResult[1];
+        $floorResult = $floorResult[1];
+
+        $div = count($floorResult);
+
+
+        $roomResult = Common::partition($roomResult , $div);
+
+        $arr = array();
+        foreach($roomResult as $k => $v){
+                $value = Common::partition($v , 7);
+                foreach($value as $k1 => $v1){
+                    $arr[$floorResult[$k]][self::$week[$k1]] = $v1;
+                }
+        }
+        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$arr);
+
+
+
+
+
 
     }
 

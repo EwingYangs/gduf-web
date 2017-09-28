@@ -7,7 +7,7 @@ use Yii;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2017-09-14 09:46:48
+ * @Last Modified time: 2017-09-27 17:03:42
  */
 class Common
 {
@@ -234,24 +234,34 @@ EOD;
 
     }
 
-    //把一个数组分成几个数组  
-    //$arr 是数组  
-    //$num 是数组的个数  
-   public static function partition($arr,$num){  
-     //数组的个数  
-     $listcount=count($arr);  
-     //分成$num 个数组每个数组是多少个元素  
-     $parem=floor($listcount/$num);  
-     //分成$num 个数组还余多少个元素  
-     $paremm=$listcount%$num;  
-     $start=0;  
-     for($i=0;$i<$num;$i++){  
-        $end=$i<$paremm?$parem+1:$parem;  
-        $newarray[$i]=array_slice($arr,$start,$end);  
-        $start=$start+$end;  
-     }  
-     return $newarray;  
-   }  
+    //把一个数组分成几个数组
+    //$arr 是数组
+    //$num 是数组的个数
+   public static function partition($arr,$num){
+     //数组的个数
+     $listcount=count($arr);
+     //分成$num 个数组每个数组是多少个元素
+     $parem=floor($listcount/$num);
+     //分成$num 个数组还余多少个元素
+     $paremm=$listcount%$num;
+     $start=0;
+     for($i=0;$i<$num;$i++){
+        $end=$i<$paremm?$parem+1:$parem;
+        $newarray[$i]=array_slice($arr,$start,$end);
+        $start=$start+$end;
+     }
+     return $newarray;
+   }
+
+
+   //对数据进行分页处理
+   public static function Pagination($arr){
+        $pageSize = Yii::$app->params['pageSize'];
+        $page = Yii::$app->request->post('page');//显示方式
+        $page = $page ? ($page-1)*$pageSize : 0;
+        $arr = array_slice($arr , $page , 5 );
+        return $arr;
+   }
 
 
 

@@ -25,8 +25,8 @@ class RoomController extends BaseController
     public function actionGetRoom()
     {
         $xnxqh = Yii::$app->params['trem'];
-        $xqid = Yii::$app->request->post('xqid');
-        $jzwid = Yii::$app->request->post('jzwid');
+        $xqid = Yii::$app->request->post('xqid');//校区
+        $jzwid = Yii::$app->request->post('jzwid');//教学楼
         $gdufclassroomUrl = Yii::$app->params['gdufclassroomUrl'];
         $header = array(
             "Content-Type: application/x-www-form-urlencoded",
