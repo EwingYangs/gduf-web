@@ -84,6 +84,7 @@ class SiteController extends BaseController
         Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$scoreInfo);
     }
 
+
     /**
      * [actionGetScoreFrom description]
      * @Ewing

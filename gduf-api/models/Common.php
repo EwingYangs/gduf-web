@@ -7,7 +7,7 @@ use Yii;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2017-09-28 15:31:42
+ * @Last Modified time: 2017-09-29 11:35:53
  */
 class Common
 {
@@ -125,6 +125,7 @@ class Common
 
         $header = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $err = curl_error($ch);
+
 
         if($err){
             self::wwwLogger($err);
