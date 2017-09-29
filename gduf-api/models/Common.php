@@ -7,7 +7,7 @@ use Yii;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2017-09-28 14:33:18
+ * @Last Modified time: 2017-09-28 15:31:42
  */
 class Common
 {
@@ -124,7 +124,6 @@ class Common
         $query = curl_exec($ch);
 
         $header = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
         $err = curl_error($ch);
 
         if($err){

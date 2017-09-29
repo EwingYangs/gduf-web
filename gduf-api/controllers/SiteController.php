@@ -30,10 +30,10 @@ class SiteController extends BaseController
         );
         $content = array('encoded' => $encode);
         $result = Common::curlPostAppMsg($gdufLoginUrl, $content, $header, 1800, 1);
-        if($result['header'] == 404){
-            Common::ajaxResult(State::$SYS_LOGIN_ERROR_CODE , State::$SYS_LOGIN_ERROR_MSG ,'账号或密码错误，登陆失败');
-        }else{
+        if($result['header'] == 302){
             Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,'登陆成功');
+        }else{
+            Common::ajaxResult(State::$SYS_LOGIN_ERROR_CODE , State::$SYS_LOGIN_ERROR_MSG ,'账号或密码错误，登陆失败');
         }
     }
 
