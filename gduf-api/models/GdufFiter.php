@@ -8,12 +8,12 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2017-09-27 17:02:41
+ * @Last Modified time: 2018-01-23 23:32:02
  */
 class GdufFiter
 {
 
-    private static $week = ['Mon' ,'Tues','Wed','Thur','Fri','Sat','Sun'];
+    private static $week = ['Monday' ,'Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 
     //获取成绩的th头
     public static function getScoreth($scoreInfo){
@@ -36,6 +36,11 @@ class GdufFiter
 
         $title_pattern = "/查询条件：([^<>]+) <br \/> 一共需要修读<span>([^<>]+)<\/span>学分， 已修读<span>([^<>]+)<\/span>学分， 还需修读<span>([^<>]+)<\/span>学分， 主修课程平均学分绩点<span>([^<>]+)<\/span>， 辅修课程平均学分绩点<span>([^<>]+)。<\/span>/";
         preg_match_all($title_pattern, $scoreInfo, $title_results);
+
+        if($title_results && !$title_results[0] || !isset($title_results[0])){
+            Common::ajaxResult(State::$SYS_LOSS_ERROR_CODE , State::$SYS_LOSS_ERROR_MSG ,'请重新登录');
+        }
+
         $title_res = self::unsetFirstEle($title_results);
 
 
@@ -146,12 +151,14 @@ class GdufFiter
 
     public static function fiterRoom($roomInfo){
         $roomInfo = preg_replace("/(<br>)+/","",$roomInfo);//去掉换行、制表等特殊字符
-
         $roomInfo = preg_replace("/( <div id='' class=\"kbcontent1\">([^<>]*)<\/div>)+/",1,$roomInfo);//去掉换行、制表等特殊字符
         $roomInfo = preg_replace("/(<div id='' class=\"kbcontent1\">([^<>]*)<\/div>)+/",1,$roomInfo);//去掉换行、制表等特殊字符
         $roomInfo = preg_replace("/( &nbsp;)+/",0,$roomInfo);//去掉换行、制表等特殊字符
+
         $f_pattern = "/<td height=\"28\" align=\"center\"><nobr>([^<>]*)<\/nobr><\/td>/";
         preg_match_all($f_pattern, $roomInfo, $floorResult);
+
+
 
         $r_pattern = "/<td  height=\"28\" align=\"center\" valign=\"top\"><nobr>([^<>]*)<\/nobr><\/td>/";
         preg_match_all($r_pattern, $roomInfo, $roomResult);
@@ -161,7 +168,6 @@ class GdufFiter
         $floorResult = $floorResult[1];
 
         $div = count($floorResult);
-
 
         $roomResult = Common::partition($roomResult , $div);
 
@@ -177,11 +183,7 @@ class GdufFiter
             }
         }
 
-        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$arr);
-
-
-        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$roomResult);
-
+        return $arr;
     }
 
     public static function  fiterLesson($lessonInfo){

@@ -21,4 +21,7 @@ class State
 
     public static $SYS_LOGIN_ERROR_CODE = 1004;
     public static $SYS_LOGIN_ERROR_MSG = 'login error';
+
+    public static $SYS_LOSS_ERROR_CODE = 1005;
+    public static $SYS_LOSS_ERROR_MSG = 'login loss';
 }
