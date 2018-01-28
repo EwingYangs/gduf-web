@@ -29,7 +29,8 @@ class SiteController extends BaseController
             "Content-Type: application/x-www-form-urlencoded",
         );
         $content = array('encoded' => $encode);
-        $result = Common::curlPostAppMsg($gdufLoginUrl, $content, $header, 1800, 1);
+        $result = Common::curlPostAppMsg($gdufLoginUrl, $content, $header, 1800, 1, $encode);
+
         if($result['header'] == 302){
             Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,'登陆成功');
         }else{
@@ -61,6 +62,7 @@ class SiteController extends BaseController
         $kcxz = Yii::$app->request->post('kcxz');//课程性质
         $kcmc = Yii::$app->request->post('kcmc');//课程名称
         $xsfs = Yii::$app->request->post('xsfs');//显示方式
+        $encoded = Yii::$app->request->post('encoded');//显示方式
 
 
         $xsfs = $xsfs ? $xsfs : 'all';
@@ -74,6 +76,7 @@ class SiteController extends BaseController
             'kcxz' => $kcxz,
             'kcmc' => $kcmc,
             'xsfs' => $xsfs,
+            'encoded' => $encoded,
         );
 
         $scoreInfo = Common::curlPostAppMsg($gdufScoreUrl, $content, $header, 1800 ,1);

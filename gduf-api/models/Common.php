@@ -7,7 +7,7 @@ use Yii;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2017-09-29 11:35:53
+ * @Last Modified time: 2018-01-28 00:26:58
  */
 class Common
 {
@@ -96,7 +96,7 @@ class Common
 
     public static function curlPostAppMsg($url, $data = '', $header, $timeout = 5 , $html=0)
     {
-        $cookie_file = $_SERVER['DOCUMENT_ROOT'].'/../cookie.txt';
+        $cookie_file = $_SERVER['DOCUMENT_ROOT'].'/../cookie/'.$data['encoded'].'_cookie.txt';
 
         if (is_array($data)) {
             $data = http_build_query($data);
@@ -122,11 +122,8 @@ class Common
         curl_setopt($ch, CURLOPT_COOKIEFILE,  $cookie_file); //设置cookies
 
         $query = curl_exec($ch);
-
         $header = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $err = curl_error($ch);
-
-
         if($err){
             self::wwwLogger($err);
         }
@@ -146,7 +143,6 @@ EOD;
 
             self::wwwLogger($metrics);
         }
-
         curl_close($ch);
         $result = ['query' => $query , 'header' => $header];
         return $result;

@@ -29,6 +29,7 @@ class RoomController extends BaseController
         $xnxqh = Yii::$app->params['trem'];
         $xqid = Yii::$app->request->post('xqid');//校区
         $jzwid = Yii::$app->request->post('jzwid');//教学楼
+        $encoded = Yii::$app->request->post('encoded');//教学楼
         $jzwidtem = intval($jzwid);
         if(in_array($jzwid, array(15,16,20,18,19))){
             //北教
@@ -43,6 +44,7 @@ class RoomController extends BaseController
             'xnxqh' => $xnxqh,
             'xqid' => $xqid,
             'jzwid' => $jzwid,
+            'encoded' => $encoded,
         );
 
         $cacheKey = 'room' + $jzwidtem;

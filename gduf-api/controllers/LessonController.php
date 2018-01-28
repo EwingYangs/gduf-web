@@ -25,20 +25,16 @@ class LessonController extends BaseController
     public function actionGetLesson()
     {
         $xnxqh = Yii::$app->params['trem'];
-        $skyx = Yii::$app->request->post('skyx');//院系
-        $sknj = Yii::$app->request->post('sknj');//上课年级
-        $skzy = Yii::$app->request->post('skzy');//专业
-        $zc1 = Yii::$app->request->post('zc1');//周次
+        $zc = Yii::$app->request->post('zc');//周次
+        $encoded = Yii::$app->request->post('encoded');//周次
         $gduflessonUrl = Yii::$app->params['gduflessonUrl'];
         $header = array(
             "Content-Type: application/x-www-form-urlencoded",
         );
         $content = array(
-            'xnxqh' => $xnxqh,
-            'skyx' => $skyx,
-            'sknj' => $sknj,
-            'skzy' => $skzy,
-            'zc1' => $zc1,
+            'xnxq01id' => $xnxqh,
+            'zc' => $zc,
+            'encoded' => $encoded,
         );
         $LessonInfo = Common::curlPostAppMsg($gduflessonUrl, $content, $header, 1800 ,1);
         // $scoreInfo=ob_get_contents();//获取输出的内容

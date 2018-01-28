@@ -8,7 +8,7 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-01-23 23:32:02
+ * @Last Modified time: 2018-01-28 16:17:57
  */
 class GdufFiter
 {
@@ -158,6 +158,10 @@ class GdufFiter
         $f_pattern = "/<td height=\"28\" align=\"center\"><nobr>([^<>]*)<\/nobr><\/td>/";
         preg_match_all($f_pattern, $roomInfo, $floorResult);
 
+        if($floorResult && !$floorResult[0] || !isset($floorResult[0])){
+            Common::ajaxResult(State::$SYS_LOSS_ERROR_CODE , State::$SYS_LOSS_ERROR_MSG ,'请重新登录');
+        }
+
 
 
         $r_pattern = "/<td  height=\"28\" align=\"center\" valign=\"top\"><nobr>([^<>]*)<\/nobr><\/td>/";
@@ -188,50 +192,98 @@ class GdufFiter
 
     public static function  fiterLesson($lessonInfo){
         $lessonInfo = preg_replace("/(<br>)+/","",$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(<br>)+/","",$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(<br\/>)+/","",$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(&nbsp;)+/","null",$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(\" >)+/","\">",$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(<font title='老师'>)+/",'|',$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(<\/font><font title='周次\(节次\)'>)+/",'|',$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(<\/font><font title='教室'>)+/",'|',$lessonInfo);//去掉换行、制表等特殊字符
+        $lessonInfo = preg_replace("/(<\/font><\/div><\/td><td width=\"123\" height=\"28\" align=\"center\" valign=\"top\">)+/",'</div>',$lessonInfo);//去掉换行、制表等特殊字符
 
-        // $lessonInfo = preg_replace("/( <div id='' class=\"kbcontent1\">([^<>]*)<\/div>)+/",1,$lessonInfo);//去掉换行、制表等特殊字符
-        $lessonInfo = preg_replace("/(<\/div><div id='' class=\"kbcontent1\">)+/",'',$lessonInfo);//去掉换行、制表等特殊字符
-        $lessonInfo = preg_replace("/( &nbsp;)+/"," <div id='' class=\"kbcontent1\">0</div>",$lessonInfo);//去掉换行、制表等特殊字符
-        $f_pattern = "/<td height=\"28\" align=\"center\"><nobr>([^<>]*)<\/nobr><\/td>/";
-        preg_match_all($f_pattern, $lessonInfo, $floorResult);
+        $f_pattern = "/style=\"display: none;\" class=\"kbcontent\">([^<>]*)<\/div>/";
+        preg_match_all($f_pattern, $lessonInfo, $lessonResult);
 
-
-
-
-        $f_pattern = "/<td height=\"28\" align=\"center\"><nobr>([^<>]*)<\/nobr><\/td>/";
-        preg_match_all($f_pattern, $lessonInfo, $floorResult);
-
-        $r_pattern = "/<td  height=\"28\" align=\"center\" valign=\"top\"><nobr> <div id='' class=\"kbcontent1\">([^<>]*)<\/div><\/nobr><\/td>/";
-
-
-        preg_match_all($r_pattern, $lessonInfo, $roomResult);
-
-
-
-
-        $roomResult = $roomResult[1];
-        $floorResult = $floorResult[1];
-
-        $div = count($floorResult);
-
-
-        $roomResult = Common::partition($roomResult , $div);
-
-        $arr = array();
-        foreach($roomResult as $k => $v){
-                $value = Common::partition($v , 7);
-                foreach($value as $k1 => $v1){
-                    $arr[$floorResult[$k]][self::$week[$k1]] = $v1;
-                }
+        if($lessonResult && !$lessonResult[0] || !isset($lessonResult[0])){
+            Common::ajaxResult(State::$SYS_LOSS_ERROR_CODE , State::$SYS_LOSS_ERROR_MSG ,'请重新登录');
         }
-        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$arr);
 
+        $lessonResult = $lessonResult[1];
+// Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$lessonResult);
 
-
-
-
-
+        $lessonResult = self::dispatchLesson($lessonResult);
+        return $lessonResult;
     }
+
+    public function dispatchLesson($lessonResult){
+        $result = array();
+        foreach($lessonResult as $index => $lesson){
+            $ca = ceil(($index+1)/7);
+            switch ($ca) {
+                case 2:
+                    $ca = 3;
+                    break;
+                case 3:
+                    $ca = 5;
+                    break;
+                case 4:
+                    $ca = 6;
+                    break;
+                case 5:
+                    $ca = 7;
+                    break;
+            }
+            $lesson = self::explodeLession($lesson, $ca);
+            if(!$lesson){
+                continue;
+            }
+            switch ($index%7) {
+                case 0:
+                    //星期一
+                    $result[0][] = $lesson;
+                    break;
+                case 1:
+                    //星期二
+                    $result[1][] = $lesson;
+                    break;
+                case 2:
+                    //星期三
+                    $result[2][] = $lesson;
+                    break;
+                case 3:
+                    //星期四
+                    $result[3][] = $lesson;
+                    break;
+                case 4:
+                    //星期五
+                    $result[4][] = $lesson;
+                    break;
+                case 5:
+                    //星期六
+                    $result[5][] = $lesson;
+                    break;
+                case 6:
+                    //星期日
+                    $result[6][] = $lesson;
+                    break;
+            }
+        }
+        return array_values($result);
+    }
+
+    public function explodeLession($lesson, $ca){
+        if($lesson == 'null'){
+            $lesson = null;
+        }else{
+            $lesson = explode('|', $lesson);
+            unset($lesson[2]);
+            array_push($lesson, $ca);
+            $lesson = array_combine(array('site','teacher','subject','class'),array_values($lesson));
+        }
+        return $lesson;
+    }
+
+
 
 
 
