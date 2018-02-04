@@ -8,7 +8,7 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-01-28 16:17:57
+ * @Last Modified time: 2018-02-04 17:16:38
  */
 class GdufFiter
 {
@@ -37,6 +37,8 @@ class GdufFiter
         $title_pattern = "/查询条件：([^<>]+) <br \/> 一共需要修读<span>([^<>]+)<\/span>学分， 已修读<span>([^<>]+)<\/span>学分， 还需修读<span>([^<>]+)<\/span>学分， 主修课程平均学分绩点<span>([^<>]+)<\/span>， 辅修课程平均学分绩点<span>([^<>]+)。<\/span>/";
         preg_match_all($title_pattern, $scoreInfo, $title_results);
 
+
+
         if($title_results && !$title_results[0] || !isset($title_results[0])){
             Common::ajaxResult(State::$SYS_LOSS_ERROR_CODE , State::$SYS_LOSS_ERROR_MSG ,'请重新登录');
         }
@@ -44,8 +46,9 @@ class GdufFiter
         $title_res = self::unsetFirstEle($title_results);
 
 
-        $td_pattern = "/<tr><td>([^<>]+)<\/td><td>([^<>]+)<\/td><td align=\"left\">([^<>]+)<\/td><td align=\"left\">([^<>]+)<\/td><!-- 控制成绩显示 --><td style=\" \"><a href=\"([^<>]+)\">([^<>]+)<\/a><\/td><\/td><td>([^<>]+)<\/td><td>0<\/td><!-- 控制绩点显示 -->           <td>([^<>]*)<\/td>      <td>([^<>]+)<\/td><td>([^<>]+)<\/td><td>([^<>]+)<\/td><\/tr>/";
+        $td_pattern = "/<tr><td>([^<>]+)<\/td><td>([^<>]+)<\/td><td align=\"left\">([^<>]+)<\/td><td align=\"left\">([^<>]+)<\/td><!-- 控制成绩显示 --><td style=\" \"><a href=\"([^<>]+)\">([^<>]+)<\/a><\/td><\/td><td>([^<>]+)<\/td><td>[0-9]+<\/td><!-- 控制绩点显示 -->           <td>([^<>]*)<\/td>      <td>([^<>]+)<\/td><td>([^<>]+)<\/td><td>([^<>]+)<\/td><\/tr>/";
         preg_match_all($td_pattern, $scoreInfo, $td_results);
+
         $td_res = self::unsetFirstEles($td_results);
         $td_arr = self::divArray($td_res);
 
@@ -112,9 +115,9 @@ class GdufFiter
         $book_pattern_1 = "/<h3 class=\"title\"><a href=\"([^<>]+)\" target=‘_blank’> ([^<>]+)<\/a>([^<>]*)<\/h3>/";
         preg_match_all($book_pattern_1, $bookInfo, $result1);
 
-
         $book_pattern_2 = "/<span class=\"dates\">索书号：<strong>([^<>]+)<\/strong><\/span>/";
         preg_match_all($book_pattern_2, $bookInfo, $result2);
+
 
 
 
@@ -145,7 +148,30 @@ class GdufFiter
         array_unshift($result , $result1[2]);
         array_unshift($result , $result4[1]);
 
+
+        //查询出书本的剩余数
+        $bNumberList = implode(';',$result4[1]);
+        $header = array(
+            "Content-Type: application/html",
+        );
+        $gdufbooklocalUrl = Yii::$app->params['gdufbooklocalUrl'] . "?ListRecno=".$bNumberList.';';
+        $bookLocal = Common::curlGetContents($gdufbooklocalUrl, 1800 , $header ,1) ;
+        $bookLocal = simplexml_load_string($bookLocal);
+        $bookLocal = json_decode(json_encode($bookLocal),TRUE);
+        $bookLocalCount = array();
+        foreach($bookLocal['books'] as $key=>$value){
+            $bookLocalCount[] = strval(count($value['book']));
+        }
+        array_push($result , $bookLocalCount);
+
+
+
+
+
+
         $result = self::divArray($result);
+        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG , $result);
+
         return $result;
     }
 

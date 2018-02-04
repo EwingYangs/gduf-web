@@ -43,6 +43,10 @@ class BookController extends BaseController
         Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$bookInfo);
     }
 
+    public function actionGetBookDetail(){
+
+    }
+
 
     /**
      * 获取图书图片
