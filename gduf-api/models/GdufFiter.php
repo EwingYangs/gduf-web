@@ -8,7 +8,7 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-02-04 17:16:38
+ * @Last Modified time: 2018-03-08 23:33:59
  */
 class GdufFiter
 {
@@ -307,6 +307,18 @@ class GdufFiter
             $lesson = array_combine(array('site','teacher','subject','class'),array_values($lesson));
         }
         return $lesson;
+    }
+
+    public function fiterCurrentFee($FeeInfo){
+        $pattern = "/<div class=\"layout-wrapper\">(.*)<\/div>/";
+        preg_match($pattern, $FeeInfo, $result);
+
+        $td_pattern = "/<td class=\"warning\">[^<>]*<\/td>                                <td>[^<>]*<\/td>                                <td class=\"info\">([^<>]*)<\/td>/";
+        preg_match_all($td_pattern, $result[0], $result);
+
+
+        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$result);
+
     }
 
 

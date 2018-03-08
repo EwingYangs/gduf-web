@@ -12,5 +12,6 @@ return [
     'gdufbookImageUrl' => 'http://218.192.12.92/NTRdrBookRetrAjaxImage.aspx',//图书馆图片地址
     'gdufclassroomUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/kbcx/kbxx_classroom_ifr',//自习室查询地址
     'gduflessonUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/xskb/xskb_list.do',//课表查询地址
+    'gdufgetcurrentfeeUrl' => 'http://dylg.idianfun.com/TP32/index.php/Weixin/Electric/getList.html',//水电费查询地址
     'pageSize' => 5 //默认每页显示5条记录
 ];
