@@ -8,7 +8,7 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-03-08 23:33:59
+ * @Last Modified time: 2018-03-12 00:13:26
  */
 class GdufFiter
 {
@@ -67,7 +67,7 @@ class GdufFiter
         $res = array();
         foreach($arr as $k=>$v){
             for($i = 0 ; $i < $len ; $i++){
-                if(!isset($v[$i])){
+                if(!isset($v[$i]) || !$v[$i]){
                     $v[$i] = '未获取';
                 }
                 $res[$i][] = $v[$i];
@@ -109,10 +109,10 @@ class GdufFiter
 
     //图书html过滤成数组
     public static function fiterBookList($bookInfo){
-        $book_pattern = "/<span class=\"author\">作者：<strong>([^<>]+)<\/strong><\/span><span class=\"publisher\">出版社：<strong>([^<>]+)<\/strong><\/span><span class=\"dates\">出版时间：<strong>([^<>]+)<\/strong><\/span><span class=\"dates\">ISBN：<strong>([^<>]+)<\/strong><\/span>/";
+        $book_pattern = "/<span class=\"author\">作者：<strong>([^<>]*)<\/strong><\/span><span class=\"publisher\">出版社：<strong>([^<>]*)<\/strong><\/span><span class=\"dates\">出版时间：<strong>([^<>]*)<\/strong><\/span><span class=\"dates\">ISBN：<strong>([^<>]*)<\/strong><\/span>/";
         preg_match_all($book_pattern, $bookInfo, $result);
 
-        $book_pattern_1 = "/<h3 class=\"title\"><a href=\"([^<>]+)\" target=‘_blank’> ([^<>]+)<\/a>([^<>]*)<\/h3>/";
+        $book_pattern_1 = "/<h3 class=\"title\"><a href=\"([^<>]*)\" target=‘_blank’> ([^<>]*)<\/a>([^<>]*)<\/h3>/";
         preg_match_all($book_pattern_1, $bookInfo, $result1);
 
         $book_pattern_2 = "/<span class=\"dates\">索书号：<strong>([^<>]+)<\/strong><\/span>/";
@@ -121,23 +121,22 @@ class GdufFiter
 
 
 
-        $book_pattern_2 = "/<span class=\"dates\">分类号：<strong>([^<>]+)<\/strong><\/span>/";
+        $book_pattern_2 = "/<span class=\"dates\">分类号：<strong>([^<>]*)<\/strong><\/span>/";
         preg_match_all($book_pattern_2, $bookInfo, $result6);
 
-        $book_pattern_3 = "/<span class=\"dates\">页数：<strong>([^<>]+)<\/strong><\/span>/";
+        $book_pattern_3 = "/<span class=\"dates\">页数：<strong>([^<>]*)<\/strong><\/span>/";
         preg_match_all($book_pattern_3, $bookInfo, $result3);
 
-        $book_pattern_3 = "/<span class=\"dates\">价格：<strong>([^<>]+)<\/strong><\/span>/";
+        $book_pattern_3 = "/<span class=\"dates\">价格：<strong>([^<>]*)<\/strong><\/span>/";
         preg_match_all($book_pattern_3, $bookInfo, $result7);
 
 
-        $book_pattern_4 = "/<input id=\"StrTmpRecno\" class=\"inputISBN\" name=\"StrTmpRecno\" type=\"text\"  value=([^<>]+)>/";
+        $book_pattern_4 = "/<input id=\"StrTmpRecno\" class=\"inputISBN\" name=\"StrTmpRecno\" type=\"text\"  value=([^<>]*)>/";
         preg_match_all($book_pattern_4, $bookInfo, $result4);
 
 
-        $book_pattern_5 = "/<div class=\"text\">([^<>]+)<\/div>/";
+        $book_pattern_5 = "/<div class=\"text\">([^<>]*)<\/div>/";
         preg_match_all($book_pattern_5, $bookInfo, $result5);
-
 
         array_push($result , $result2[1]);
         array_push($result , $result6[1]);
@@ -160,20 +159,21 @@ class GdufFiter
         $bookLocal = json_decode(json_encode($bookLocal),TRUE);
         $bookLocalCount = array();
         foreach($bookLocal['books'] as $key=>$value){
-            $bookLocalCount[] = strval(count($value['book']));
+            if(isset($value['book']['bookid'])){
+                $bookLocalCount[] = '1';
+            }else{
+                $bookLocalCount[] = strval(count($value['book']));
+            }
         }
         array_push($result , $bookLocalCount);
-
-
-
-
-
 
         $result = self::divArray($result);
         Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG , $result);
 
         return $result;
     }
+
+    public static function fiterBookDetail(){}
 
     public static function fiterRoom($roomInfo){
         $roomInfo = preg_replace("/(<br>)+/","",$roomInfo);//去掉换行、制表等特殊字符
@@ -313,12 +313,56 @@ class GdufFiter
         $pattern = "/<div class=\"layout-wrapper\">(.*)<\/div>/";
         preg_match($pattern, $FeeInfo, $result);
 
-        $td_pattern = "/<td class=\"warning\">[^<>]*<\/td>                                <td>[^<>]*<\/td>                                <td class=\"info\">([^<>]*)<\/td>/";
+
+        $td_pattern = "/<td class=\"warning\">[^<>]*<\/td>                                <td>[^<>]*<\/td>                                <td class=\"info\">(?<fee>[^<>]*?)<\/td>/";
         preg_match_all($td_pattern, $result[0], $result);
 
+        if(!$result['fee']){
+            Common::ajaxResult(State::$SYS_ERROR_CODE , '您的宿舍暂时没有录入系统!');
+        }
 
-        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$result);
+        return isset($result['fee'][0]) ? $result['fee'][0] : '0.00';
+    }
 
+
+    public function fiterFeeList($FeeInfo){
+        $pattern = "/<div class=\"layout-wrapper\">(.*)<\/div>/";
+        preg_match($pattern, $FeeInfo, $result);
+
+        $fee_pattern = "/<tr>                                <td class=\"warning\">(?<date>[^<>]*?)<\/td>                                <td>(?<today>[^<>]*?)<\/td>                                <td class=\"info\">(?<remain>[^<>]*?)<\/td>                            <\/tr>/";
+        preg_match_all($fee_pattern, $result[0], $feeList);
+        if(!$feeList['remain']){
+            Common::ajaxResult(State::$SYS_ERROR_CODE , '您的宿舍暂时没有录入系统!');
+        }
+
+        $feeListArr = [];
+        foreach($feeList['remain'] as $k=>$v){
+            $feeListArr[] = [
+                "date"=>$feeList['date'][$k],
+                "today"=>$feeList['today'][$k],
+                "remain"=>$feeList['remain'][$k]
+            ];
+        }
+
+
+
+        $buy_pattern = "/<td class=\"warning\">(?<date>[^<>]*?)<\/td>                                <td>[^<>]*<\/td>                                <td class=\"info\">(?<fee>[^<>]*?)<\/td>                                <td>(?<amount>[^<>]*?)<\/td>/";
+        preg_match_all($buy_pattern, $result[0], $buyList);
+
+        $buyListArr = [];
+        if($buyList['fee']){
+            foreach($buyList['fee'] as $k=>$v){
+                $buyListArr[] = [
+                    "date"=>$buyList['date'][$k],
+                    "fee"=>$buyList['fee'][$k],
+                    "amount"=>$buyList['amount'][$k]
+                ];
+            }
+        }
+        return [
+            'feeListArr' => $feeListArr,
+            'buyListArr' => $buyListArr,
+        ];
     }
 
 

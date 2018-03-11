@@ -7,7 +7,7 @@ use Yii;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-03-08 21:42:45
+ * @Last Modified time: 2018-03-10 22:19:42
  */
 class Common
 {
@@ -71,7 +71,8 @@ class Common
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, $html);
-        // curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         // curl_setopt($ch, CURLOPT_USERAGENT, 'Bmob Web 1.0');
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
 

@@ -27,7 +27,6 @@ class FeeController extends BaseController
         $buildingId = Yii::$app->request->post('buildingId');
         $roomName = Yii::$app->request->post('roomName');
         $encoded = Yii::$app->request->post('encoded');//密钥
-        $page = Yii::$app->request->post('page');
         $gdufgetcurrentfeeUrl = Yii::$app->params['gdufgetcurrentfeeUrl'];
         $header = array(
             "Content-Type: application/x-www-form-urlencoded",
@@ -43,6 +42,34 @@ class FeeController extends BaseController
         $FeeInfo = preg_replace("/[\t\n\r]+/","",$FeeInfo['query']);//去掉换行、制表等特殊字符
 
         $FeeInfo = GdufFiter::fiterCurrentFee($FeeInfo); //过滤图书内容
+        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$FeeInfo);
+    }
+
+    /**
+     * 获取电费
+     *
+     * @return Response|JSON
+     */
+    public function actionGetFeeList()
+    {
+        $buildingId = Yii::$app->request->post('buildingId');
+        $roomName = Yii::$app->request->post('roomName');
+        $encoded = Yii::$app->request->post('encoded');//密钥
+        $gdufgetcurrentfeeUrl = Yii::$app->params['gdufgetcurrentfeeUrl'];
+        $header = array(
+            "Content-Type: application/x-www-form-urlencoded",
+        );
+
+        $content = array(
+            'buildingId' => $buildingId,
+            'roomName' => $roomName,
+            'encoded' => $encoded,
+        );
+        $FeeInfo = Common::curlPostAppMsg($gdufgetcurrentfeeUrl, $content, $header, 1800 ,1);
+
+        $FeeInfo = preg_replace("/[\t\n\r]+/","",$FeeInfo['query']);//去掉换行、制表等特殊字符
+
+        $FeeInfo = GdufFiter::fiterFeeList($FeeInfo); //过滤图书内容
         Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$FeeInfo);
     }
 }

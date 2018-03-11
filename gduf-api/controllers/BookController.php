@@ -44,7 +44,50 @@ class BookController extends BaseController
     }
 
     public function actionGetBookDetail(){
+        $ListISBN = Yii::$app->request->post('ListISBN');
+        $header = array(
+            "Content-Type: application/html",
+        );
 
+        $arr = array();
+        $bookImage = '';
+
+        if($ListISBN != '未获取'){
+            $gdufbookdetailUrl = Yii::$app->params['gdufbookdetailUrl'];
+            $gdufbookdetailUrl = $gdufbookdetailUrl . $ListISBN;
+
+            $bookInfo = Common::curlGetContents($gdufbookdetailUrl, 1800 , $header ,1) ;
+            if($bookInfo == 'bad isbn'){
+                Common::ajaxResult(State::$SYS_ERROR_CODE , 'bad isbn');
+            }
+            $bookInfo = preg_replace("/db:attribute/","attribute",$bookInfo);
+
+            $bookInfo = simplexml_load_string($bookInfo);
+
+            $arr = array();
+            foreach($bookInfo->children()->attribute as $k=>$v){
+                $arr[((array)($v->attributes()->name))[0]] = ((array)($v))[0];
+            }
+
+
+            if(!$bookInfo->summary || !is_string(((array)($bookInfo->children()->summary))[0])){
+                $arr['summary'] = '';
+            }else{
+                $arr['summary'] = ((array)($bookInfo->children()->summary))[0];
+            }
+
+            $bookImage = ((array)($bookInfo->children()->link[2]->attributes()->href))[0];
+        }
+
+        $bookLocal = $this->getBookLocal();
+
+        $bookDeatil = [
+            'bookImage' => $bookImage,
+            'bookLocal' => $bookLocal,
+            'baseInfo' => $arr,
+        ];
+
+        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG , $bookDeatil);
     }
 
 
@@ -53,17 +96,36 @@ class BookController extends BaseController
      *
      * @return Response|JSON
      */
-    public function actionGetBookImage()
+    // public function getBookImage()
+    // {
+    //     $ListISBN = Yii::$app->request->post('ListISBN');
+    //     $gdufbookImageUrl = Yii::$app->params['gdufbookImageUrl'];
+    //     $header = array(
+    //         "Content-Type: application/html",
+    //     );
+    //     $gdufbookImageUrl = $gdufbookImageUrl . "?ListISBN=".$ListISBN.';';
+
+    //     $bookImage = Common::curlGetContents($gdufbookImageUrl, 1800 , $header ,1) ;
+    //     $bookImage = simplexml_load_string($bookImage);
+    //     return $bookImage;
+    // }
+
+    /**
+     * 获取图书馆藏信息
+     *
+     * @return Response|JSON
+     */
+    public function getBookLocal()
     {
-        $ListISBN = Yii::$app->request->post('ListISBN');
-        $gdufbookImageUrl = Yii::$app->params['gdufbookImageUrl'];
+        $ListISBN = Yii::$app->request->post('ListRecno');
+        $gdufbookLocalUrl = Yii::$app->params['gdufbooklocalUrl'];
         $header = array(
             "Content-Type: application/html",
         );
-        $gdufbookImageUrl = $gdufbookImageUrl . "?ListISBN=".$ListISBN;
+        $gdufbookLocalUrl = $gdufbookLocalUrl . "?ListRecno=".$ListISBN.';';
 
-        $bookDetail = Common::curlGetContents($gdufbookImageUrl, 1800 , $header ,1) ;
-        $bookDetail = simplexml_load_string($bookDetail);
-        Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG , $bookDetail);
+        $bookLocal = Common::curlGetContents($gdufbookLocalUrl, 1800 , $header ,1) ;
+        $bookLocal = simplexml_load_string($bookLocal);
+        return $bookLocal->books;
     }
 }
