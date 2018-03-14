@@ -2,7 +2,7 @@
 
 return [
     'adminEmail' => 'admin@example.com',
-    'trem' => '2017-2018-1',//当前的学期
+    'trem' => '2017-2018-2',//当前的学期
     'gdufLoginUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/xk/LoginToXk',//教务系统登录地址
     'gdufScoreUrl' => 'http://jwxt.gduf.edu.cn/jsxsd/kscj/cjcx_list',//成绩查询地址
     'gdufbooksearchUrl' => 'http://218.192.12.92/NTRdrBookRetr.aspx',//图书馆搜索地址
