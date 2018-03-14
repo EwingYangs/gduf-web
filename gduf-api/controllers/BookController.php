@@ -65,18 +65,22 @@ class BookController extends BaseController
             $bookInfo = simplexml_load_string($bookInfo);
 
             $arr = array();
+
             foreach($bookInfo->children()->attribute as $k=>$v){
-                $arr[((array)($v->attributes()->name))[0]] = ((array)($v))[0];
+                $name = (array)($v->attributes()->name);
+                $value = (array)($v);
+                $arr[$name[0]] = $value[0];
             }
 
-
-            if(!$bookInfo->summary || !is_string(((array)($bookInfo->children()->summary))[0])){
+            $summary = (array)($bookInfo->children()->summary);
+            if(!$bookInfo->summary || !is_string($summary[0])){
                 $arr['summary'] = '';
             }else{
-                $arr['summary'] = ((array)($bookInfo->children()->summary))[0];
+                $arr['summary'] = $summary[0];
             }
 
-            $bookImage = ((array)($bookInfo->children()->link[2]->attributes()->href))[0];
+            $imageLink = (array)($bookInfo->children()->link[2]->attributes()->href);
+            $bookImage = $imageLink[0];
         }
 
         $bookLocal = $this->getBookLocal();
