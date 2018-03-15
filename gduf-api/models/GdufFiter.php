@@ -8,7 +8,7 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-03-15 12:34:44
+ * @Last Modified time: 2018-03-15 14:41:45
  */
 class GdufFiter
 {
@@ -220,16 +220,17 @@ class GdufFiter
         $lessonInfo = preg_replace("/(<br>)+/","",$lessonInfo);//去掉换行、制表等特殊字符
         $lessonInfo = preg_replace("/(<br>)+/","",$lessonInfo);//去掉换行、制表等特殊字符
         $lessonInfo = preg_replace("/(<br\/>)+/","",$lessonInfo);//去掉换行、制表等特殊字符
+
         $lessonInfo = preg_replace("/(&nbsp;)+/","null",$lessonInfo);//去掉换行、制表等特殊字符
         $lessonInfo = preg_replace("/(\" >)+/","\">",$lessonInfo);//去掉换行、制表等特殊字符
         $lessonInfo = preg_replace("/(<font title='老师'>)+/",'|',$lessonInfo);//去掉换行、制表等特殊字符
         $lessonInfo = preg_replace("/(<\/font><font title='周次\(节次\)'>)+/",'|',$lessonInfo);//去掉换行、制表等特殊字符
+
         $lessonInfo = preg_replace("/(<\/font><font title='教室'>)+/",'|',$lessonInfo);//去掉换行、制表等特殊字符
         $lessonInfo = preg_replace("/(<\/font><\/div><\/td><td width=\"123\" height=\"28\" align=\"center\" valign=\"top\">)+/",'</div>',$lessonInfo);//去掉换行、制表等特殊字符
 
         $f_pattern = "/style=\"display: none;\" class=\"kbcontent\">([^<>]*)<\/div>/";
         preg_match_all($f_pattern, $lessonInfo, $lessonResult);
-
         if($lessonResult && !$lessonResult[0] || !isset($lessonResult[0])){
             Common::ajaxResult(State::$SYS_LOSS_ERROR_CODE , State::$SYS_LOSS_ERROR_MSG ,'请重新登录');
         }
@@ -293,7 +294,14 @@ class GdufFiter
                     break;
             }
         }
+
+        for ($i=0; $i <= 6; $i++) {
+            if(!isset($result[$i])){
+                $result[$i] = [];
+            }
+        }
         ksort($result);
+
         return array_values($result);
     }
 
