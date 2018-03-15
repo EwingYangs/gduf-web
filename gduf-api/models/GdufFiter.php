@@ -8,7 +8,7 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-03-12 00:13:26
+ * @Last Modified time: 2018-03-15 12:34:44
  */
 class GdufFiter
 {
@@ -235,13 +235,12 @@ class GdufFiter
         }
 
         $lessonResult = $lessonResult[1];
-// Common::ajaxResult(State::$SUSSION_CODE , State::$SUSSION_MSG ,$lessonResult);
 
         $lessonResult = self::dispatchLesson($lessonResult);
         return $lessonResult;
     }
 
-    public function dispatchLesson($lessonResult){
+    public static function dispatchLesson($lessonResult){
         $result = array();
         foreach($lessonResult as $index => $lesson){
             $ca = ceil(($index+1)/7);
@@ -294,10 +293,11 @@ class GdufFiter
                     break;
             }
         }
+        ksort($result);
         return array_values($result);
     }
 
-    public function explodeLession($lesson, $ca){
+    public static function explodeLession($lesson, $ca){
         if($lesson == 'null'){
             $lesson = null;
         }else{
