@@ -8,7 +8,7 @@ use app\models\Common;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-03-15 14:41:45
+ * @Last Modified time: 2018-03-16 12:50:13
  */
 class GdufFiter
 {
@@ -317,7 +317,7 @@ class GdufFiter
         return $lesson;
     }
 
-    public function fiterCurrentFee($FeeInfo){
+    public static function fiterCurrentFee($FeeInfo){
         $pattern = "/<div class=\"layout-wrapper\">(.*)<\/div>/";
         preg_match($pattern, $FeeInfo, $result);
 

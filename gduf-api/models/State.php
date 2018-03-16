@@ -24,4 +24,7 @@ class State
 
     public static $SYS_LOSS_ERROR_CODE = 1005;
     public static $SYS_LOSS_ERROR_MSG = 'login loss';
+
+    public static $SYS_TOKEN_ERROR_CODE = 1006;
+    public static $SYS_TOKEN_ERROR_MSG = 'token error';
 }

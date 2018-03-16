@@ -7,7 +7,7 @@ use Yii;
  * @Author: Ewing
  * @Date:   2017-08-23 16:14:39
  * @Last Modified by:   Marte
- * @Last Modified time: 2018-03-10 22:19:42
+ * @Last Modified time: 2018-03-16 13:20:55
  */
 class Common
 {
@@ -258,6 +258,47 @@ EOD;
         $page = $page ? ($page-1)*$pageSize : 0;
         $arr = array_slice($arr , $page , 5 );
         return $arr;
+   }
+
+   /**
+    * [获取是第几节课，例如0304为2]
+    * @Ewing
+    * @DateTime 2018-03-16T13:14:52+0800
+    * @return   [type]                   [description]
+    *
+    // 节次： 1 => 1,2 节
+    // 2 => 3,4 节
+    // 3 => 3,4,5 节
+    // 4 => 6,7 节
+    // 5 => 6,7,8 节
+    // 6 => 9,10 节
+    // 7 => 11,12 节
+    */
+   public static function getLessonTime($kcsj){
+        $kcsj = substr($kcsj, 1);
+        switch ($kcsj) {
+            case '0102':
+                return 1;
+                break;
+            case '0304':
+                return 2;
+                break;
+            case '030405':
+                return 3;
+                break;
+            case '0607':
+                return 4;
+                break;
+            case '060708':
+                return 5;
+                break;
+            case '0910':
+                return 6;
+                break;
+            case '1112':
+                return 7;
+                break;
+        }
    }
 
 

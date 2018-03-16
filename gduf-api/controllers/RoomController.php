@@ -56,7 +56,7 @@ class RoomController extends BaseController
             $this->roomInfo = Common::curlPostAppMsg($gdufclassroomUrl, $content, $header, 1800 ,1);
             $this->roomInfo = preg_replace("/[\t\n\r]+/","",$this->roomInfo['query']);//去掉换行、制表等特殊字符
             $this->roomInfo = GdufFiter::fiterRoom($this->roomInfo); //过滤教室内容
-            Yii::$app->cache->set($cacheKey,$this->roomInfo,24*3600*30*5);
+            Yii::$app->cache->set($cacheKey,$this->roomInfo,24*3600);//缓存一天
         }
         $this->roomInfo = $this->selectRoomByDay();
         $this->roomInfo = $this->fiterFloor($jzwidtem);//楼层过滤
