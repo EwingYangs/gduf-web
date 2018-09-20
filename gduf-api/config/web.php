@@ -30,7 +30,7 @@ $config = [
                 'username' => '13250150526@163.com',
                 'password' => 'kingandwade136',
                 'port' => '465',
-                'encryption' => 'tls',
+                'encryption' => 'ssl',
             ],
         ],
         'log' => [
