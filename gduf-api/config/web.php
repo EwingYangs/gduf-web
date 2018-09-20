@@ -29,7 +29,7 @@ $config = [
                 'host' => 'smtp.163.com',
                 'username' => '13250150526@163.com',
                 'password' => 'kingandwade136',
-                'port' => '25',
+                'port' => '465',
                 'encryption' => 'tls',
             ],
         ],
